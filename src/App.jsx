@@ -28,6 +28,9 @@ function App() {
             <article key={a.id} className="border-b py-4">
               <span className="text-sm text-red-700">{a.category}</span>
               <h2 className="text-xl font-bold">{a.title}</h2>
+              {a.image_url && (
+                <img src={a.image_url} alt="" className="w-full rounded my-2" />
+              )}
               <p className="text-gray-600">{a.summary}</p>
             </article>
           ))}
