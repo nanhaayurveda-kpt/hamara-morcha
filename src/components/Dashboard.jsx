@@ -9,7 +9,7 @@ function Dashboard() {
 
   const [category, setCategory] = useState("शिक्षक");
   const [title, setTitle] = useState("");
-  const [summary, setSummary] = useState("");
+  const [content, setContent] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [imageId, setImageId] = useState("");
   const [uploading, setUploading] = useState(false);
@@ -54,14 +54,14 @@ function Dashboard() {
       body: JSON.stringify({
         category,
         title,
-        summary,
+        content,
         image_url: imageUrl,
         image_id: imageId,
       }),
     });
 
     setTitle("");
-    setSummary("");
+    setContent("");
     setImageUrl("");
     setImageId("");
     loadArticles();
@@ -97,9 +97,9 @@ function Dashboard() {
         </select>
 
         <textarea
-          value={summary}
-          onChange={(e) => setSummary(e.target.value)}
-          placeholder="सारांश लिखिए…"
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          placeholder="पूरी खबर यहाँ लिखिए…"
           rows={4}
           className="w-full border rounded p-3 mb-4 outline-none resize-none"
         />

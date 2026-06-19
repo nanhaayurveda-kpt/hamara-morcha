@@ -35,7 +35,6 @@ function App() {
                         className="w-full rounded my-2"
                       />
                     )}
-                    <p className="text-gray-600">{a.summary}</p>
                   </article>
                 ))}
               </main>
