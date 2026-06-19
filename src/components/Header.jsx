@@ -7,7 +7,7 @@ function Header() {
     <header className="bg-red-700 text-white">
       <div className="max-w-4xl mx-auto px-4 py-4 text-center">
         <Link to="/">
-          <h1 className="text-3xl font-bold">हमारा मोर्चा</h1>
+          <h1 className="text-3xl font-bold">पगार-पीड़ा</h1>
         </Link>
         <p className="mt-2 text-sm text-red-100">
           गरिमामय जिंदगी जीने के लिए जरूरी न्यूनतम मजदूरी से भी वंचित आबादी की हुंकार
