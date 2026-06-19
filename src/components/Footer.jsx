@@ -13,7 +13,7 @@ function Footer() {
 
         <p>
           राष्ट्रीय राजधानी क्षेत्र में औद्योगिक श्रमिकों के हालात से तो हम सभी परिचित हो
-          चुके हैं लेकिन जरूरत इस बात की भी है कि मॉल्स, दुकानों, निजी स्कूलों-कॉलेजों
+          चुकें हैं लेकिन जरूरत इस बात की भी है कि मॉल्स, दुकानों, निजी स्कूलों-कॉलेजों
           जैसी जगहों पर काम करने वालों को भी सरोकार के दायरे में लाया जाए।
         </p>
 
@@ -45,7 +45,12 @@ function Footer() {
         <p className="font-semibold">— पगार-पीड़ा</p>
       </div>
 
-      <p className="text-xs text-center mt-8">
+      {/* प्रधान संपादक का नाम यहाँ जोड़ा गया है */}
+      <p className="text-center font-bold mt-6 text-sm tracking-wide">
+        प्रधान संपादकः रमाशंकर पाठक
+      </p>
+
+      <p className="text-xs text-center mt-4">
         © {new Date().getFullYear()} पगार-पीड़ा · Developed by{" "}
         <a
           href="https://www.nishantsoftwares.in"
