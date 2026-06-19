@@ -3,7 +3,7 @@ import { GoogleLogin } from "@react-oauth/google";
 
 const CATEGORIES = [
   "शिक्षक",
-  "वकील",
+  "चिंटू-पिंटू",
   "दिहाड़ीदार",
   "पत्रकार",
   "ऐक्टिविस्ट",
