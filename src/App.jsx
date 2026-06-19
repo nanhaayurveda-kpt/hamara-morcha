@@ -1,21 +1,41 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useState, useEffect } from "react";
 import Header from "./components/Header";
-import Footer from "./components/Footer";
-import Dashboard from "./pages/Dashboard";
+import Dashboard from "./components/Dashboard";
 
 function App() {
+  const API = import.meta.env.VITE_API_URL;
+  const [articles, setArticles] = useState([]);
+  const [page, setPage] = useState("home");
+
+  useEffect(() => {
+    fetch(`${API}/articles`)
+      .then((res) => res.json())
+      .then((data) => setArticles(data));
+  }, []);
+
   return (
-    <BrowserRouter>
-      <div className="flex flex-col min-h-screen">
-        <Header />
-        <main className="flex-1">
-          <Routes>
-            <Route path="/dashboard" element={<Dashboard />} />
-          </Routes>
-        </main>
-        <Footer />
+    <div>
+      <Header />
+
+      <div className="flex gap-4 p-2">
+        <button onClick={() => setPage("home")}>होम</button>
+        <button onClick={() => setPage("dashboard")}>डैशबोर्ड</button>
       </div>
-    </BrowserRouter>
+
+      {page === "home" && (
+        <main className="max-w-4xl mx-auto p-4">
+          {articles.map((a) => (
+            <article key={a.id} className="border-b py-4">
+              <span className="text-sm text-red-700">{a.category}</span>
+              <h2 className="text-xl font-bold">{a.title}</h2>
+              <p className="text-gray-600">{a.summary}</p>
+            </article>
+          ))}
+        </main>
+      )}
+
+      {page === "dashboard" && <Dashboard />}
+    </div>
   );
 }
 
