@@ -1,6 +1,15 @@
 import { useState, useEffect } from "react";
+import { GoogleLogin } from "@react-oauth/google";
 
-const CATEGORIES = ["शिक्षक", "वकील", "दिहाड़ीदार", "पत्रकार", "ऐक्टिविस्ट", "विविध", "हुंकार"];
+const CATEGORIES = [
+  "शिक्षक",
+  "वकील",
+  "दिहाड़ीदार",
+  "पत्रकार",
+  "ऐक्टिविस्ट",
+  "विविध",
+  "हुंकार",
+];
 
 function Dashboard() {
   const API = import.meta.env.VITE_API_URL;
@@ -14,6 +23,7 @@ function Dashboard() {
   const [imageId, setImageId] = useState("");
   const [uploading, setUploading] = useState(false);
   const [articles, setArticles] = useState([]);
+  const [token, setToken] = useState("");
 
   function loadArticles() {
     fetch(`${API}/articles`)
@@ -36,7 +46,7 @@ function Dashboard() {
 
     const res = await fetch(
       `https://api.cloudinary.com/v1_1/${CLOUD}/image/upload`,
-      { method: "POST", body: form }
+      { method: "POST", body: form },
     );
     const data = await res.json();
 
@@ -50,7 +60,10 @@ function Dashboard() {
 
     await fetch(`${API}/articles`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
       body: JSON.stringify({
         category,
         title,
@@ -68,8 +81,25 @@ function Dashboard() {
   }
 
   async function handleDelete(id) {
-    await fetch(`${API}/articles/${id}`, { method: "DELETE" });
+    await fetch(`${API}/articles/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
     loadArticles();
+  }
+
+  if (!token) {
+    return (
+      <div className="max-w-3xl mx-auto p-4 mt-10 flex flex-col items-center gap-4">
+        <p className="text-gray-600">
+          खबर डालने के लिए पहले Google से login करें
+        </p>
+        <GoogleLogin
+          onSuccess={(res) => setToken(res.credential)}
+          onError={() => alert("Login नहीं हो पाया")}
+        />
+      </div>
+    );
   }
 
   return (
@@ -114,7 +144,9 @@ function Dashboard() {
         {uploading && (
           <p className="text-sm text-gray-500 mb-3">तस्वीर चढ़ रही है…</p>
         )}
-        {imageUrl && <img src={imageUrl} alt="" className="w-40 rounded mb-3" />}
+        {imageUrl && (
+          <img src={imageUrl} alt="" className="w-40 rounded mb-3" />
+        )}
 
         <button
           onClick={handleSubmit}
