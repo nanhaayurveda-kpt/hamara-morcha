@@ -4,6 +4,8 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Dashboard from "./components/Dashboard";
 import { Routes, Route, Link } from "react-router";
+import ContactPage from "./components/ContactPage";
+import TeamPage from "./components/TeamPage";
 
 function App() {
   const API = import.meta.env.VITE_API_URL;
@@ -47,6 +49,8 @@ function App() {
           />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/article/:id" element={<ArticlePage />} />
+          <Route path="/sampark" element={<ContactPage />} />
+          <Route path="/team" element={<TeamPage />} />
         </Routes>
       </div>
 
