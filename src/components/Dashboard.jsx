@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { GoogleLogin } from "@react-oauth/google";
+import ReactQuill from "react-quill-new";
+import "react-quill-new/dist/quill.snow.css";
 
 const CATEGORIES = [
   "शिक्षक",
@@ -10,6 +12,17 @@ const CATEGORIES = [
   "विविध",
   "हुंकार",
 ];
+
+const QUILL_MODULES = {
+  toolbar: [
+    ["bold", "italic", "underline"],
+    [{ color: [] }, { background: [] }],
+    [{ header: [2, 3, false] }],
+    [{ list: "ordered" }, { list: "bullet" }],
+    ["link"],
+    ["clean"],
+  ],
+};
 
 function Dashboard() {
   const API = import.meta.env.VITE_API_URL;
@@ -24,6 +37,7 @@ function Dashboard() {
   const [uploading, setUploading] = useState(false);
   const [articles, setArticles] = useState([]);
   const [token, setToken] = useState("");
+  const [editingId, setEditingId] = useState(null);
 
   function loadArticles() {
     fetch(`${API}/articles`)
@@ -55,11 +69,24 @@ function Dashboard() {
     setUploading(false);
   }
 
+  function startEdit(a) {
+    setEditingId(a.id);
+    setCategory(a.category);
+    setTitle(a.title);
+    setContent(a.content || "");
+    setImageUrl(a.image_url || "");
+    setImageId(a.image_id || "");
+    window.scrollTo(0, 0);
+  }
+
   async function handleSubmit() {
     if (!title.trim()) return;
 
-    await fetch(`${API}/articles`, {
-      method: "POST",
+    const url = editingId ? `${API}/articles/${editingId}` : `${API}/articles`;
+    const method = editingId ? "PUT" : "POST";
+
+    await fetch(url, {
+      method,
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
@@ -73,6 +100,7 @@ function Dashboard() {
       }),
     });
 
+    setEditingId(null);
     setTitle("");
     setContent("");
     setImageUrl("");
@@ -105,7 +133,9 @@ function Dashboard() {
   return (
     <div className="max-w-3xl mx-auto p-4">
       <div className="bg-white border rounded-lg p-5 shadow-sm">
-        <h2 className="text-lg font-semibold mb-4">नई ख़बर</h2>
+        <h2 className="text-lg font-semibold mb-4">
+          {editingId ? "ख़बर बदलें" : "नई ख़बर"}
+        </h2>
 
         <input
           value={title}
@@ -126,12 +156,13 @@ function Dashboard() {
           ))}
         </select>
 
-        <textarea
+        <ReactQuill
+          theme="snow"
           value={content}
-          onChange={(e) => setContent(e.target.value)}
+          onChange={setContent}
           placeholder="पूरी खबर यहाँ लिखिए…"
-          rows={4}
-          className="w-full border rounded p-3 mb-4 outline-none resize-none"
+          modules={QUILL_MODULES}
+          className="mb-4 bg-white"
         />
 
         <input
@@ -152,7 +183,7 @@ function Dashboard() {
           onClick={handleSubmit}
           className="bg-red-700 text-white px-5 py-2 rounded font-medium hover:bg-red-800"
         >
-          प्रकाशित करें
+          {editingId ? "अपडेट करें" : "प्रकाशित करें"}
         </button>
       </div>
 
@@ -177,6 +208,12 @@ function Dashboard() {
               <span className="text-xs text-red-700">{a.category}</span>
               <p className="font-medium">{a.title}</p>
             </div>
+            <button
+              onClick={() => startEdit(a)}
+              className="text-sm text-gray-400 hover:text-red-700 mr-3"
+            >
+              संपादन
+            </button>
             <button
               onClick={() => handleDelete(a.id)}
               className="text-sm text-gray-400 hover:text-red-700"
