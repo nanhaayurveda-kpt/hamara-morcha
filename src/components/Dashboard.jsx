@@ -13,15 +13,43 @@ const CATEGORIES = [
   "हुंकार",
 ];
 
+function extractYouTubeId(url) {
+  const m = url.match(
+    /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/|v\/))([\w-]{11})/,
+  );
+  return m ? m[1] : null;
+}
+
 const QUILL_MODULES = {
-  toolbar: [
-    ["bold", "italic", "underline"],
-    [{ color: [] }, { background: [] }],
-    [{ header: [2, 3, false] }],
-    [{ list: "ordered" }, { list: "bullet" }],
-    ["link"],
-    ["clean"],
-  ],
+  toolbar: {
+    container: [
+      ["bold", "italic", "underline"],
+      [{ color: [] }, { background: [] }],
+      [{ header: [2, 3, false] }],
+      [{ list: "ordered" }, { list: "bullet" }],
+      ["link", "video"],
+      ["clean"],
+    ],
+    handlers: {
+      video: function () {
+        const url = window.prompt("YouTube का link यहाँ paste कीजिए:");
+        if (!url) return;
+        const id = extractYouTubeId(url);
+        if (!id) {
+          window.alert("YouTube link सही नहीं लगा।");
+          return;
+        }
+        const range = this.quill.getSelection(true);
+        this.quill.insertEmbed(
+          range.index,
+          "video",
+          `https://www.youtube.com/embed/${id}`,
+          "user",
+        );
+        this.quill.setSelection(range.index + 1);
+      },
+    },
+  },
 };
 
 function Dashboard() {

@@ -29,7 +29,7 @@ function ArticlePage() {
         <img src={article.image_url} alt="" className="w-full rounded mb-4" />
       )}
       <div
-        className="text-gray-800 leading-relaxed [&_p]:mb-3 [&_a]:text-red-700 [&_a]:underline [&_h2]:text-xl [&_h2]:font-bold [&_h2]:mt-4 [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:mt-3 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6"
+        className="text-gray-800 leading-relaxed [&_p]:mb-3 [&_a]:text-red-700 [&_a]:underline [&_h2]:text-xl [&_h2]:font-bold [&_h2]:mt-4 [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:mt-3 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_iframe]:w-full [&_iframe]:aspect-video [&_iframe]:my-3 [&_iframe]:rounded"
         dangerouslySetInnerHTML={{ __html: article.content }}
       />
     </article>
