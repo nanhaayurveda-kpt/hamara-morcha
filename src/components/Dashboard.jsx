@@ -63,6 +63,8 @@ function Dashboard() {
   const [imageUrl, setImageUrl] = useState("");
   const [imageId, setImageId] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [pdfUrl, setPdfUrl] = useState("");
+  const [pdfUploading, setPdfUploading] = useState(false);
   const [articles, setArticles] = useState([]);
   const [token, setToken] = useState("");
   const [editingId, setEditingId] = useState(null);
@@ -102,6 +104,25 @@ function Dashboard() {
     setUploading(false);
   }
 
+  async function handlePdf(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    setPdfUploading(true);
+
+    const form = new FormData();
+    form.append("file", file);
+    form.append("upload_preset", PRESET);
+
+    const res = await fetch(
+      `https://api.cloudinary.com/v1_1/${CLOUD}/auto/upload`,
+      { method: "POST", body: form },
+    );
+    const data = await res.json();
+
+    setPdfUrl(data.secure_url || "");
+    setPdfUploading(false);
+  }
+
   function startEdit(a) {
     setEditingId(a.id);
     setCategory(a.category);
@@ -109,6 +130,7 @@ function Dashboard() {
     setContent(a.content || "");
     setImageUrl(a.image_url || "");
     setImageId(a.image_id || "");
+    setPdfUrl(a.pdf_url || "");
     window.scrollTo(0, 0);
   }
 
@@ -130,6 +152,7 @@ function Dashboard() {
         content,
         image_url: imageUrl,
         image_id: imageId,
+        pdf_url: pdfUrl,
       }),
     });
 
@@ -143,6 +166,7 @@ function Dashboard() {
     setContent("");
     setImageUrl("");
     setImageId("");
+    setPdfUrl("");
     loadArticles();
   }
 
@@ -230,6 +254,30 @@ function Dashboard() {
         )}
         {imageUrl && (
           <img src={imageUrl} alt="" className="w-40 rounded mb-3" />
+        )}
+
+        <div className="mb-3">
+          <label className="block text-sm text-gray-600 mb-1">
+            PDF (वैकल्पिक)
+          </label>
+          <input type="file" accept="application/pdf" onChange={handlePdf} />
+        </div>
+
+        {pdfUploading && (
+          <p className="text-sm text-gray-500 mb-3">PDF चढ़ रहा है…</p>
+        )}
+        {pdfUrl && (
+          <p className="text-sm text-green-700 mb-3">
+            PDF लग गया ✓ —{" "}
+            <a
+              href={pdfUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline"
+            >
+              देखें
+            </a>
+          </p>
         )}
 
         <button
