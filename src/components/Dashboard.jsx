@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { GoogleLogin } from "@react-oauth/google";
+import { GoogleLogin, googleLogout } from "@react-oauth/google";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 
@@ -49,6 +49,11 @@ function Dashboard() {
     loadArticles();
   }, []);
 
+  function handleLogout() {
+    googleLogout();
+    setToken("");
+  }
+
   async function handleImage(e) {
     const file = e.target.files[0];
     if (!file) return;
@@ -85,7 +90,7 @@ function Dashboard() {
     const url = editingId ? `${API}/articles/${editingId}` : `${API}/articles`;
     const method = editingId ? "PUT" : "POST";
 
-    await fetch(url, {
+    const res = await fetch(url, {
       method,
       headers: {
         "Content-Type": "application/json",
@@ -100,6 +105,11 @@ function Dashboard() {
       }),
     });
 
+    if (!res.ok) {
+      alert(`सेव नहीं हुआ (status ${res.status}) — दुबारा login करके देखिए।`);
+      return;
+    }
+
     setEditingId(null);
     setTitle("");
     setContent("");
@@ -109,10 +119,16 @@ function Dashboard() {
   }
 
   async function handleDelete(id) {
-    await fetch(`${API}/articles/${id}`, {
+    const res = await fetch(`${API}/articles/${id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
     });
+
+    if (!res.ok) {
+      alert(`delete नहीं हुआ (status ${res.status}) — दुबारा login करके देखिए।`);
+      return;
+    }
+
     loadArticles();
   }
 
@@ -132,6 +148,15 @@ function Dashboard() {
 
   return (
     <div className="max-w-3xl mx-auto p-4">
+      <div className="flex justify-end mb-3">
+        <button
+          onClick={handleLogout}
+          className="text-sm text-gray-500 hover:text-red-700"
+        >
+          लॉगआउट
+        </button>
+      </div>
+
       <div className="bg-white border rounded-lg p-5 shadow-sm">
         <h2 className="text-lg font-semibold mb-4">
           {editingId ? "ख़बर बदलें" : "नई ख़बर"}
