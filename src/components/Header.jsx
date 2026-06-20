@@ -1,6 +1,14 @@
 import { Link } from "react-router";
 
-const MENU = ["शिक्षक", "चिंटू-पिंटू", "दिहाड़ीदार", "पत्रकार", "ऐक्टिविस्ट", "विविध", "हुंकार"];
+const MENU = [
+  "शिक्षक",
+  "चिंटू-पिंटू",
+  "दिहाड़ीदार",
+  "पत्रकार",
+  "ऐक्टिविस्ट",
+  "विविध",
+  "हुंकार",
+];
 
 function Header() {
   return (
@@ -10,18 +18,26 @@ function Header() {
           <h1 className="text-3xl font-bold">पगार-पीड़ा</h1>
         </Link>
         <p className="mt-2 text-base text-white">
-          गरिमामय जिंदगी जीने के लिए जरूरी न्यूनतम मजदूरी से भी वंचित आबादी की हुंकार
+          गरिमामय जिंदगी जीने के लिए जरूरी न्यूनतम मजदूरी से भी वंचित आबादी की
+          हुंकार
         </p>
       </div>
 
       <nav className="bg-teal-800">
         <ul className="max-w-4xl mx-auto flex flex-wrap justify-between px-4 py-2">
           <li>
-            <Link to="/" className="hover:underline">होम</Link>
+            <Link to="/" className="hover:underline">
+              होम
+            </Link>
           </li>
           {MENU.map((item) => (
-            <li key={item} className="cursor-pointer hover:underline">
-              {item}
+            <li key={item}>
+              <Link
+                to={`/category/${item}`}
+                className="cursor-pointer hover:underline"
+              >
+                {item}
+              </Link>
             </li>
           ))}
         </ul>

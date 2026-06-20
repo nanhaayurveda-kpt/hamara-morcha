@@ -6,6 +6,7 @@ import Dashboard from "./components/Dashboard";
 import { Routes, Route, Link } from "react-router";
 import ContactPage from "./components/ContactPage";
 import TeamPage from "./components/TeamPage";
+import CategoryPage from "./components/CategoryPage";
 
 function App() {
   const API = import.meta.env.VITE_API_URL;
@@ -51,6 +52,7 @@ function App() {
           <Route path="/article/:id" element={<ArticlePage />} />
           <Route path="/sampark" element={<ContactPage />} />
           <Route path="/team" element={<TeamPage />} />
+          <Route path="/category/:cat" element={<CategoryPage />} />
         </Routes>
       </div>
 
