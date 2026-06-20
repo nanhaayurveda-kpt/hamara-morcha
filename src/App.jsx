@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { Routes, Route } from "react-router";
+import ArticlePage from "./components/ArticlePage";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Dashboard from "./components/Dashboard";
+import { Routes, Route, Link } from "react-router";
 
 function App() {
   const API = import.meta.env.VITE_API_URL;
@@ -27,7 +28,11 @@ function App() {
                 {articles.map((a) => (
                   <article key={a.id} className="border-b py-4">
                     <span className="text-sm text-red-700">{a.category}</span>
-                    <h2 className="text-xl font-bold">{a.title}</h2>
+                    <Link to={`/article/${a.id}`}>
+                      <h2 className="text-xl font-bold hover:text-red-700">
+                        {a.title}
+                      </h2>
+                    </Link>
                     {a.image_url && (
                       <img
                         src={a.image_url}
@@ -41,6 +46,7 @@ function App() {
             }
           />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/article/:id" element={<ArticlePage />} />
         </Routes>
       </div>
 
