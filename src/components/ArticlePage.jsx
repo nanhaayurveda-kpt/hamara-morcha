@@ -3,26 +3,7 @@ import { useParams, Link } from "react-router";
 
 function tidyContent(html) {
   if (!html) return "";
-  let h = html;
-  h = h.replace(/<\/?pre[^>]*>/gi, "");
-  h = h.replace(/>\s+</g, "><");
-  h = h.replace(/(?:<br\s*\/?>\s*){2,}/gi, "\u0001");
-  h = h.replace(/<br\s*\/?>/gi, " ");
-  h = h.replace(/<p>\s+/gi, "<p>");
-  h = h.replace(/[ \t]{2,}/g, " ");
-  if (/<p[\s>]/i.test(h)) {
-    h = h.replace(/\u0001/g, "");
-  } else {
-    h =
-      "<p>" +
-      h
-        .split("\u0001")
-        .map((s) => s.trim())
-        .filter(Boolean)
-        .join("</p><p>") +
-      "</p>";
-  }
-  return h;
+  return html.replace(/&nbsp;|\u00A0/g, " ");
 }
 
 function ArticlePage() {
@@ -72,7 +53,7 @@ function ArticlePage() {
       )}
 
       <div
-        className="text-lg leading-relaxed text-gray-900 break-words [&_p]:mb-4 [&_p]:whitespace-normal [&_a]:text-red-700 [&_a]:underline [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:mt-6 [&_h2]:mb-2 [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:mt-5 [&_h3]:mb-2 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-4 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:mb-4 [&_iframe]:w-full [&_iframe]:aspect-video [&_iframe]:my-4 [&_iframe]:rounded-lg"
+        className="text-lg leading-relaxed text-gray-900 break-words [&_p]:mb-4 [&_a]:text-red-700 [&_a]:underline [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:mt-6 [&_h2]:mb-2 [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:mt-5 [&_h3]:mb-2 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-4 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:mb-4 [&_iframe]:w-full [&_iframe]:aspect-video [&_iframe]:my-4 [&_iframe]:rounded-lg"
         dangerouslySetInnerHTML={{ __html: tidyContent(article.content) }}
       />
 
