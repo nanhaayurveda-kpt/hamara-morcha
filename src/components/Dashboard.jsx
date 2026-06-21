@@ -114,6 +114,18 @@ function Dashboard() {
     setToken("");
   }
 
+  function resetForm() {
+    setEditingId(null);
+    setTitle("");
+    setContent("");
+    setImageUrl("");
+    setImageId("");
+    setPdfUrl("");
+    setCaption("");
+    setGalleryImages([]);
+    setGalleryCaption("");
+  }
+
   async function handleImage(e) {
     const file = e.target.files[0];
     if (!file) return;
@@ -246,16 +258,19 @@ function Dashboard() {
       return;
     }
 
-    setEditingId(null);
-    setTitle("");
-    setContent("");
-    setImageUrl("");
-    setImageId("");
-    setPdfUrl("");
-    setCaption("");
-    setGalleryImages([]);
-    setGalleryCaption("");
+    const saved = await res.json();
     loadArticles();
+
+    if (editingId) {
+      resetForm();
+    } else {
+      setEditingId(saved.id);
+      loadGallery(saved.id);
+      window.scrollTo(0, 0);
+      alert(
+        "ख़बर प्रकाशित हो गई — अब नीचे 'गैलरी' सेक्शन में तस्वीरें जोड़ सकते हैं।",
+      );
+    }
   }
 
   async function handleDelete(id) {
@@ -271,6 +286,7 @@ function Dashboard() {
       return;
     }
 
+    if (editingId === id) resetForm();
     loadArticles();
   }
 
@@ -332,9 +348,19 @@ function Dashboard() {
       </div>
 
       <div className="bg-white border rounded-lg p-5 shadow-sm">
-        <h2 className="text-lg font-semibold mb-4">
-          {editingId ? "ख़बर बदलें" : "नई ख़बर"}
-        </h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold">
+            {editingId ? "ख़बर बदलें" : "नई ख़बर"}
+          </h2>
+          {editingId && (
+            <button
+              onClick={resetForm}
+              className="text-sm text-gray-500 hover:text-red-700"
+            >
+              + नई ख़बर
+            </button>
+          )}
+        </div>
 
         <input
           value={title}
@@ -408,7 +434,7 @@ function Dashboard() {
           </p>
         )}
 
-        {editingId && (
+        {editingId ? (
           <div className="mb-4 border-t pt-4">
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               गैलरी (अतिरिक्त तस्वीरें)
@@ -442,6 +468,12 @@ function Dashboard() {
                 ))}
               </div>
             )}
+          </div>
+        ) : (
+          <div className="mb-4 border-t pt-4">
+            <p className="text-sm text-gray-500">
+              गैलरी (अतिरिक्त तस्वीरें) — खबर "प्रकाशित" करते ही यहीं जुड़ने लगेगी।
+            </p>
           </div>
         )}
 
