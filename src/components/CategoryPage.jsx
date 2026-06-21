@@ -17,8 +17,9 @@ function CategoryPage() {
 
   return (
     <main className="max-w-3xl mx-auto px-4 py-6">
-      <h1 className="text-2xl font-extrabold mb-2">{cat}</h1>
-      <hr className="mb-4 border-gray-200" />
+      <h1 className="text-3xl font-extrabold leading-snug border-b-2 border-red-700 pb-2 mb-6">
+        {cat}
+      </h1>
 
       {filtered.length === 0 ? (
         <p className="text-gray-600">इस श्रेणी में अभी कोई खबर नहीं।</p>
@@ -31,10 +32,10 @@ function CategoryPage() {
               className="flex gap-4 py-4 group"
             >
               <div className="flex-1">
-                <span className="text-xs font-bold text-gray-500">
+                <span className="text-xs font-bold text-red-700">
                   {a.category}
                 </span>
-                <h3 className="text-xl font-bold leading-snug mt-1 group-hover:text-gray-600">
+                <h3 className="text-xl font-bold leading-snug mt-1 group-hover:text-red-700">
                   {a.title}
                 </h3>
               </div>
