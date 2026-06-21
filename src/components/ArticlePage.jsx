@@ -31,7 +31,14 @@ function ArticlePage() {
       </h1>
 
       {article.image_url && (
-        <img src={article.image_url} alt="" className="w-full rounded-lg mb-6" />
+        <figure className="mb-6">
+          <img src={article.image_url} alt="" className="w-full rounded-lg" />
+          {article.caption && (
+            <figcaption className="text-sm text-gray-500 mt-2">
+              {article.caption}
+            </figcaption>
+          )}
+        </figure>
       )}
 
       <div

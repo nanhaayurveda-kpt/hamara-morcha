@@ -65,6 +65,7 @@ function Dashboard() {
   const [uploading, setUploading] = useState(false);
   const [pdfUrl, setPdfUrl] = useState("");
   const [pdfUploading, setPdfUploading] = useState(false);
+  const [caption, setCaption] = useState("");
   const [articles, setArticles] = useState([]);
   const [token, setToken] = useState("");
   const [editingId, setEditingId] = useState(null);
@@ -131,6 +132,7 @@ function Dashboard() {
     setImageUrl(a.image_url || "");
     setImageId(a.image_id || "");
     setPdfUrl(a.pdf_url || "");
+    setCaption(a.caption || "");
     window.scrollTo(0, 0);
   }
 
@@ -153,6 +155,7 @@ function Dashboard() {
         image_url: imageUrl,
         image_id: imageId,
         pdf_url: pdfUrl,
+        caption,
       }),
     });
 
@@ -167,6 +170,7 @@ function Dashboard() {
     setImageUrl("");
     setImageId("");
     setPdfUrl("");
+    setCaption("");
     loadArticles();
   }
 
@@ -177,7 +181,9 @@ function Dashboard() {
     });
 
     if (!res.ok) {
-      alert(`delete नहीं हुआ (status ${res.status}) — दुबारा login करके देखिए।`);
+      alert(
+        `delete नहीं हुआ (status ${res.status}) — दुबारा login करके देखिए।`,
+      );
       return;
     }
 
@@ -255,6 +261,12 @@ function Dashboard() {
         {imageUrl && (
           <img src={imageUrl} alt="" className="w-40 rounded mb-3" />
         )}
+        <input
+          value={caption}
+          onChange={(e) => setCaption(e.target.value)}
+          placeholder="फोटो का कैप्शन (वैकल्पिक)"
+          className="w-full border rounded px-3 py-2 text-sm mb-3 outline-none"
+        />
 
         <div className="mb-3">
           <label className="block text-sm text-gray-600 mb-1">
