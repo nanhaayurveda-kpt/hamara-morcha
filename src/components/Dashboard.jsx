@@ -75,15 +75,39 @@ function Dashboard() {
   const [editingId, setEditingId] = useState(null);
   const [confirm, setConfirm] = useState(null);
 
+  const [galleryImages, setGalleryImages] = useState([]);
+  const [galleryUploading, setGalleryUploading] = useState(false);
+  const [galleryCaption, setGalleryCaption] = useState("");
+
+  const [pending, setPending] = useState([]);
+
   function loadArticles() {
     fetch(`${API}/articles`)
       .then((res) => res.json())
       .then((data) => setArticles(data));
   }
 
+  function loadGallery(id) {
+    fetch(`${API}/articles/${id}/images`)
+      .then((res) => res.json())
+      .then((data) => setGalleryImages(Array.isArray(data) ? data : []));
+  }
+
+  function loadPending() {
+    fetch(`${API}/comments/pending`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => res.json())
+      .then((data) => setPending(Array.isArray(data) ? data : []));
+  }
+
   useEffect(() => {
     loadArticles();
   }, []);
+
+  useEffect(() => {
+    if (token) loadPending();
+  }, [token]);
 
   function handleLogout() {
     googleLogout();
@@ -129,6 +153,58 @@ function Dashboard() {
     setPdfUploading(false);
   }
 
+  async function handleGalleryUpload(e) {
+    const file = e.target.files[0];
+    if (!file || !editingId) return;
+    setGalleryUploading(true);
+
+    const form = new FormData();
+    form.append("file", file);
+    form.append("upload_preset", PRESET);
+
+    const up = await fetch(
+      `https://api.cloudinary.com/v1_1/${CLOUD}/image/upload`,
+      { method: "POST", body: form },
+    );
+    const data = await up.json();
+
+    const res = await fetch(`${API}/articles/${editingId}/images`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        image_url: data.secure_url,
+        image_id: data.public_id,
+        caption: galleryCaption,
+      }),
+    });
+
+    setGalleryUploading(false);
+    e.target.value = "";
+
+    if (!res.ok) {
+      alert("गैलरी तस्वीर सेव नहीं हुई — दुबारा login करके देखिए।");
+      return;
+    }
+
+    setGalleryCaption("");
+    loadGallery(editingId);
+  }
+
+  async function handleGalleryDelete(imageId) {
+    const res = await fetch(`${API}/article-images/${imageId}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) {
+      alert("तस्वीर नहीं हटी — दुबारा login करके देखिए।");
+      return;
+    }
+    loadGallery(editingId);
+  }
+
   function startEdit(a) {
     setEditingId(a.id);
     setCategory(a.category);
@@ -138,6 +214,7 @@ function Dashboard() {
     setImageId(a.image_id || "");
     setPdfUrl(a.pdf_url || "");
     setCaption(a.caption || "");
+    loadGallery(a.id);
     window.scrollTo(0, 0);
   }
 
@@ -176,6 +253,8 @@ function Dashboard() {
     setImageId("");
     setPdfUrl("");
     setCaption("");
+    setGalleryImages([]);
+    setGalleryCaption("");
     loadArticles();
   }
 
@@ -193,6 +272,22 @@ function Dashboard() {
     }
 
     loadArticles();
+  }
+
+  async function approveComment(id) {
+    await fetch(`${API}/comments/${id}/approve`, {
+      method: "PUT",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    loadPending();
+  }
+
+  async function deleteComment(id) {
+    await fetch(`${API}/comments/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    loadPending();
   }
 
   function askSubmit() {
@@ -285,7 +380,7 @@ function Dashboard() {
         <input
           value={caption}
           onChange={(e) => setCaption(e.target.value)}
-          placeholder="फोटो का कैप्शन (वैकल्पिक)"
+          placeholder="मुख्य फोटो का कैप्शन (वैकल्पिक)"
           className="w-full border rounded px-3 py-2 text-sm mb-3 outline-none"
         />
 
@@ -311,6 +406,43 @@ function Dashboard() {
               देखें
             </a>
           </p>
+        )}
+
+        {editingId && (
+          <div className="mb-4 border-t pt-4">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              गैलरी (अतिरिक्त तस्वीरें)
+            </label>
+            <input
+              value={galleryCaption}
+              onChange={(e) => setGalleryCaption(e.target.value)}
+              placeholder="अगली तस्वीर का कैप्शन (वैकल्पिक)"
+              className="w-full border rounded px-3 py-2 text-sm mb-2 outline-none"
+            />
+            <input type="file" accept="image/*" onChange={handleGalleryUpload} />
+            {galleryUploading && (
+              <p className="text-sm text-gray-500 mt-2">तस्वीर चढ़ रही है…</p>
+            )}
+            {galleryImages.length > 0 && (
+              <div className="grid grid-cols-3 gap-2 mt-3">
+                {galleryImages.map((img) => (
+                  <div key={img.id} className="relative">
+                    <img
+                      src={img.image_url}
+                      alt=""
+                      className="w-full h-24 object-cover rounded"
+                    />
+                    <button
+                      onClick={() => handleGalleryDelete(img.id)}
+                      className="absolute top-1 right-1 bg-red-700 text-white text-xs rounded px-1.5"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         )}
 
         <button
@@ -356,6 +488,39 @@ function Dashboard() {
             </button>
           </div>
         ))}
+      </div>
+
+      <h3 className="text-sm font-semibold text-gray-500 mt-8 mb-3">
+        स्वीकृति बाक़ी टिप्पणियाँ ({pending.length})
+      </h3>
+
+      <div className="space-y-2">
+        {pending.length === 0 ? (
+          <p className="text-gray-400 text-sm">कोई नई टिप्पणी नहीं।</p>
+        ) : (
+          pending.map((c) => (
+            <div key={c.id} className="bg-white border rounded p-3">
+              <p className="text-xs text-gray-500">
+                {c.author_name} · {c.article_title}
+              </p>
+              <p className="text-base text-gray-900 my-1">{c.body}</p>
+              <div className="flex gap-4">
+                <button
+                  onClick={() => approveComment(c.id)}
+                  className="text-sm text-green-700 hover:underline"
+                >
+                  अनुमति दें
+                </button>
+                <button
+                  onClick={() => deleteComment(c.id)}
+                  className="text-sm text-red-700 hover:underline"
+                >
+                  हटाएँ
+                </button>
+              </div>
+            </div>
+          ))
+        )}
       </div>
 
       {confirm && (

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router";
+import { GoogleLogin } from "@react-oauth/google";
 
 function tidyContent(html) {
   if (!html) return "";
@@ -12,11 +13,43 @@ function ArticlePage() {
   const articleId = id.split("-")[0];
   const [article, setArticle] = useState(null);
 
+  const [comments, setComments] = useState([]);
+  const [commentToken, setCommentToken] = useState("");
+  const [commentBody, setCommentBody] = useState("");
+  const [commentSent, setCommentSent] = useState(false);
+  const [sending, setSending] = useState(false);
+
   useEffect(() => {
     fetch(`${API}/articles/${articleId}`)
       .then((res) => res.json())
       .then((data) => setArticle(data));
   }, [articleId]);
+
+  useEffect(() => {
+    fetch(`${API}/articles/${articleId}/comments`)
+      .then((res) => res.json())
+      .then((data) => setComments(Array.isArray(data) ? data : []));
+  }, [articleId]);
+
+  async function submitComment() {
+    if (!commentBody.trim()) return;
+    setSending(true);
+    const res = await fetch(`${API}/articles/${articleId}/comments`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${commentToken}`,
+      },
+      body: JSON.stringify({ body: commentBody }),
+    });
+    setSending(false);
+    if (!res.ok) {
+      alert("टिप्पणी नहीं भेजी जा सकी — दुबारा login करके देखिए।");
+      return;
+    }
+    setCommentBody("");
+    setCommentSent(true);
+  }
 
   if (!article) {
     return <p className="max-w-2xl mx-auto px-4 py-8">लोड हो रहा है…</p>;
@@ -57,6 +90,21 @@ function ArticlePage() {
         dangerouslySetInnerHTML={{ __html: tidyContent(article.content) }}
       />
 
+      {article.images && article.images.length > 0 && (
+        <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {article.images.map((img) => (
+            <figure key={img.id}>
+              <img src={img.image_url} alt="" className="w-full rounded-lg" />
+              {img.caption && (
+                <figcaption className="text-sm text-gray-500 mt-1">
+                  {img.caption}
+                </figcaption>
+              )}
+            </figure>
+          ))}
+        </div>
+      )}
+
       {article.pdf_url && (
         <a
           href={article.pdf_url}
@@ -67,6 +115,58 @@ function ArticlePage() {
           📄 संलग्न PDF देखें / डाउनलोड करें
         </a>
       )}
+
+      <section className="mt-10 border-t border-gray-200 pt-6">
+        <h2 className="text-xl font-bold mb-4">टिप्पणियाँ</h2>
+
+        {comments.length === 0 ? (
+          <p className="text-gray-500 text-base mb-6">अभी कोई टिप्पणी नहीं।</p>
+        ) : (
+          <ul className="space-y-4 mb-6">
+            {comments.map((c) => (
+              <li key={c.id} className="border-b border-gray-100 pb-3">
+                <p className="text-sm font-semibold text-gray-800">
+                  {c.author_name}
+                </p>
+                <p className="text-base text-gray-900">{c.body}</p>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {commentSent ? (
+          <p className="text-green-700 text-base">
+            आपकी टिप्पणी भेज दी गई है। स्वीकृति के बाद यहाँ दिखेगी।
+          </p>
+        ) : commentToken ? (
+          <div>
+            <textarea
+              value={commentBody}
+              onChange={(e) => setCommentBody(e.target.value)}
+              placeholder="अपनी टिप्पणी लिखें…"
+              rows={3}
+              className="w-full border rounded p-3 text-base outline-none mb-2"
+            />
+            <button
+              onClick={submitComment}
+              disabled={sending}
+              className="bg-red-700 text-white px-5 py-2 rounded font-medium hover:bg-red-800 disabled:opacity-50"
+            >
+              {sending ? "भेजा जा रहा है…" : "टिप्पणी भेजें"}
+            </button>
+          </div>
+        ) : (
+          <div className="flex flex-col items-start gap-2">
+            <p className="text-gray-600 text-base">
+              टिप्पणी करने के लिए Google से login करें
+            </p>
+            <GoogleLogin
+              onSuccess={(res) => setCommentToken(res.credential)}
+              onError={() => alert("Login नहीं हो पाया")}
+            />
+          </div>
+        )}
+      </section>
     </article>
   );
 }
