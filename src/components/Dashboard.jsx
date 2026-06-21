@@ -106,6 +106,37 @@ function Dashboard() {
   }, []);
 
   useEffect(() => {
+    const saved = localStorage.getItem("pp_draft");
+    if (!saved) return;
+    try {
+      const d = JSON.parse(saved);
+      if (d.title) setTitle(d.title);
+      if (d.content) setContent(d.content);
+      if (d.category) setCategory(d.category);
+      if (d.caption) setCaption(d.caption);
+      if (d.imageUrl) setImageUrl(d.imageUrl);
+      if (d.imageId) setImageId(d.imageId);
+      if (d.pdfUrl) setPdfUrl(d.pdfUrl);
+    } catch (e) {
+      console.error("draft पढ़ने में दिक्कत:", e.message);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (editingId) return;
+    const draft = {
+      title,
+      content,
+      category,
+      caption,
+      imageUrl,
+      imageId,
+      pdfUrl,
+    };
+    localStorage.setItem("pp_draft", JSON.stringify(draft));
+  }, [title, content, category, caption, imageUrl, imageId, pdfUrl, editingId]);
+
+  useEffect(() => {
     if (token) loadPending();
   }, [token]);
 
@@ -264,6 +295,7 @@ function Dashboard() {
     if (editingId) {
       resetForm();
     } else {
+      localStorage.removeItem("pp_draft");
       setEditingId(saved.id);
       loadGallery(saved.id);
       window.scrollTo(0, 0);
@@ -309,7 +341,10 @@ function Dashboard() {
   function askSubmit() {
     if (!title.trim()) return;
     if (editingId) {
-      setConfirm({ message: "इस ख़बर में बदलाव सेव करें?", action: handleSubmit });
+      setConfirm({
+        message: "इस ख़बर में बदलाव सेव करें?",
+        action: handleSubmit,
+      });
     } else {
       handleSubmit();
     }
@@ -445,7 +480,11 @@ function Dashboard() {
               placeholder="अगली तस्वीर का कैप्शन (वैकल्पिक)"
               className="w-full border rounded px-3 py-2 text-sm mb-2 outline-none"
             />
-            <input type="file" accept="image/*" onChange={handleGalleryUpload} />
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleGalleryUpload}
+            />
             {galleryUploading && (
               <p className="text-sm text-gray-500 mt-2">तस्वीर चढ़ रही है…</p>
             )}
@@ -472,7 +511,8 @@ function Dashboard() {
         ) : (
           <div className="mb-4 border-t pt-4">
             <p className="text-sm text-gray-500">
-              गैलरी (अतिरिक्त तस्वीरें) — खबर "प्रकाशित" करते ही यहीं जुड़ने लगेगी।
+              गैलरी (अतिरिक्त तस्वीरें) — खबर "प्रकाशित" करते ही यहीं जुड़ने
+              लगेगी।
             </p>
           </div>
         )}
