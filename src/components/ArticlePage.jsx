@@ -37,6 +37,8 @@ function ArticlePage() {
     return <p className="max-w-2xl mx-auto px-4 py-8">लोड हो रहा है…</p>;
   }
 
+  const views = article.views ?? article.view_count;
+
   return (
     <article className="max-w-2xl mx-auto px-4 py-6">
       <Link to="/" className="text-sm font-medium text-red-700">
@@ -46,9 +48,13 @@ function ArticlePage() {
       <span className="block text-sm font-bold text-red-700 mt-5">
         {article.category}
       </span>
-      <h1 className="text-3xl sm:text-4xl font-extrabold leading-snug mt-1 mb-5">
+      <h1 className="text-3xl sm:text-4xl font-extrabold leading-snug mt-1 mb-2">
         {article.title}
       </h1>
+
+      {views != null && (
+        <p className="text-sm text-gray-500 mb-5">👁 {views} बार पढ़ी गई</p>
+      )}
 
       {article.image_url && (
         <figure className="mb-6">
@@ -62,7 +68,7 @@ function ArticlePage() {
       )}
 
       <div
-        className="text-lg leading-relaxed text-gray-900 [&_p]:mb-4 [&_a]:text-red-700 [&_a]:underline [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:mt-6 [&_h2]:mb-2 [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:mt-5 [&_h3]:mb-2 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-4 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:mb-4 [&_iframe]:w-full [&_iframe]:aspect-video [&_iframe]:my-4 [&_iframe]:rounded-lg"
+        className="text-lg leading-relaxed text-gray-900 [&_p]:mb-4 [&_p]:text-justify [&_a]:text-red-700 [&_a]:underline [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:mt-6 [&_h2]:mb-2 [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:mt-5 [&_h3]:mb-2 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-4 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:mb-4 [&_iframe]:w-full [&_iframe]:aspect-video [&_iframe]:my-4 [&_iframe]:rounded-lg"
         dangerouslySetInnerHTML={{ __html: tidyContent(article.content) }}
       />
 
