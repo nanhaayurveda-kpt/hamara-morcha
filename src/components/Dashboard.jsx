@@ -20,6 +20,10 @@ function extractYouTubeId(url) {
   return m ? m[1] : null;
 }
 
+function cleanContent(html) {
+  return html.replace(/&nbsp;|\u00A0/g, " ");
+}
+
 const QUILL_MODULES = {
   toolbar: {
     container: [
@@ -151,7 +155,7 @@ function Dashboard() {
       body: JSON.stringify({
         category,
         title,
-        content,
+        content: cleanContent(content),
         image_url: imageUrl,
         image_id: imageId,
         pdf_url: pdfUrl,
