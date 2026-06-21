@@ -10,28 +10,44 @@ function CategoryPage() {
   useEffect(() => {
     fetch(`${API}/articles`)
       .then((res) => res.json())
-      .then((data) => setArticles(data));
+      .then((data) => setArticles(Array.isArray(data) ? data : []));
   }, []);
 
   const filtered = articles.filter((a) => a.category === cat);
 
   return (
-    <main className="max-w-4xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">{cat}</h1>
+    <main className="max-w-3xl mx-auto px-4 py-6">
+      <h1 className="text-2xl font-extrabold mb-2">{cat}</h1>
+      <hr className="mb-4 border-gray-200" />
+
       {filtered.length === 0 ? (
         <p className="text-gray-600">इस श्रेणी में अभी कोई खबर नहीं।</p>
       ) : (
-        filtered.map((a) => (
-          <article key={a.id} className="border-b py-4">
-            <span className="text-sm text-red-700">{a.category}</span>
-            <Link to={`/article/${a.id}-${slugify(a.title)}`}>
-              <h2 className="text-xl font-bold hover:text-red-700">{a.title}</h2>
+        <div className="divide-y divide-gray-200">
+          {filtered.map((a) => (
+            <Link
+              key={a.id}
+              to={`/article/${a.id}-${slugify(a.title)}`}
+              className="flex gap-4 py-4 group"
+            >
+              <div className="flex-1">
+                <span className="text-xs font-bold text-gray-500">
+                  {a.category}
+                </span>
+                <h3 className="text-xl font-bold leading-snug mt-1 group-hover:text-gray-600">
+                  {a.title}
+                </h3>
+              </div>
+              {a.image_url && (
+                <img
+                  src={a.image_url}
+                  alt=""
+                  className="w-28 h-28 rounded object-cover flex-shrink-0"
+                />
+              )}
             </Link>
-            {a.image_url && (
-              <img src={a.image_url} alt="" className="w-full rounded my-2" />
-            )}
-          </article>
-        ))
+          ))}
+        </div>
       )}
     </main>
   );

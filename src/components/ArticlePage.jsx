@@ -14,31 +14,37 @@ function ArticlePage() {
   }, [articleId]);
 
   if (!article) {
-    return <p className="max-w-3xl mx-auto p-4">लोड हो रहा है…</p>;
+    return <p className="max-w-2xl mx-auto px-4 py-8">लोड हो रहा है…</p>;
   }
 
   return (
-    <article className="max-w-3xl mx-auto p-4">
-      <Link to="/" className="text-red-700 text-sm">
+    <article className="max-w-2xl mx-auto px-4 py-6">
+      <Link to="/" className="text-sm font-medium text-red-700">
         ← वापस
       </Link>
-      <span className="block text-sm text-red-700 mt-4">
+
+      <span className="block text-sm font-bold text-red-700 mt-5">
         {article.category}
       </span>
-      <h1 className="text-2xl font-bold mb-3">{article.title}</h1>
+      <h1 className="text-3xl sm:text-4xl font-extrabold leading-snug mt-1 mb-5">
+        {article.title}
+      </h1>
+
       {article.image_url && (
-        <img src={article.image_url} alt="" className="w-full rounded mb-4" />
+        <img src={article.image_url} alt="" className="w-full rounded-lg mb-6" />
       )}
+
       <div
-        className="text-gray-800 leading-relaxed [&_p]:mb-3 [&_a]:text-red-700 [&_a]:underline [&_h2]:text-xl [&_h2]:font-bold [&_h2]:mt-4 [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:mt-3 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_iframe]:w-full [&_iframe]:aspect-video [&_iframe]:my-3 [&_iframe]:rounded"
+        className="text-lg leading-relaxed text-gray-900 [&_p]:mb-4 [&_a]:text-red-700 [&_a]:underline [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:mt-6 [&_h2]:mb-2 [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:mt-5 [&_h3]:mb-2 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-4 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:mb-4 [&_iframe]:w-full [&_iframe]:aspect-video [&_iframe]:my-4 [&_iframe]:rounded-lg"
         dangerouslySetInnerHTML={{ __html: article.content }}
       />
+
       {article.pdf_url && (
         <a
           href={article.pdf_url}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-block mt-5 text-red-700 underline font-medium"
+          className="inline-block mt-6 rounded border border-red-700 px-4 py-2 font-medium text-red-700 hover:bg-red-50"
         >
           📄 संलग्न PDF देखें / डाउनलोड करें
         </a>
