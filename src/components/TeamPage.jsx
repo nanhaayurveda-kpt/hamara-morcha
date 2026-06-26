@@ -34,7 +34,7 @@ function TeamPage() {
             />
             <div>
               <p className="font-semibold text-lg">{m.name}</p>
-              
+              <a
                 href={`mailto:${m.email}`}
                 className="text-sm text-gray-600 hover:text-red-700"
               >
