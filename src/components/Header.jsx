@@ -24,7 +24,7 @@ function Header() {
       </div>
 
       <nav className="bg-teal-800">
-        <ul className="max-w-4xl mx-auto flex flex-wrap justify-between px-4 py-2">
+        <ul className="max-w-4xl mx-auto flex flex-wrap justify-center px-4 py-2">
           <li>
             <Link to="/" className="hover:underline">
               होम
